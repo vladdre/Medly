@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medly - Sistem Medical AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div>
+                    <h1>🏥 Medly</h1>
+                    <p class="subtitle">Sistem Medical AI - Procesare automată a conversațiilor doctor-pacient</p>
+                </div>
+                <div class="user-info">
+                    <span id="userName">Medic</span>
+                    <button id="logoutBtn" class="btn-logout" onclick="logout()">Deconectare</button>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <!-- Tabs Navigation -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('conversation')">Procesare Conversație</button>
+                <button class="tab-btn" onclick="switchTab('records')">Istoric Medical</button>
+            </div>
+
+            <!-- Conversation Processing Tab -->
+            <div id="conversationTab" class="tab-content active">
+                <div class="form-section">
+                    <h2>Procesare Conversație Doctor-Pacient</h2>
+                    <p class="info-text">Introduceți sau înregistrați conversația pentru generare automată de sumare medicală, note clinice și rețete.</p>
+                    
+                    <div class="form-group">
+                        <label for="conversationText">Conversație:</label>
+                        <textarea id="conversationText" rows="8" placeholder="Ex: Doamnă Răduță, în urma investigațiilor, am stabilit că aveți boală coronariană. Vă recomand să începeți tratament cu Aspirină și statine..."></textarea>
+                    </div>
+
+                    <div class="voice-controls">
+                        <button id="recordBtn" class="btn-record" onclick="toggleRecording()">
+                            <span id="recordIcon">🎤</span>
+                            <span id="recordText">Începe Înregistrarea</span>
+                        </button>
+                        <button id="stopBtn" class="btn-stop" onclick="stopRecording()" style="display: none;">
+                            ⏹️ Oprește
+                        </button>
+                    </div>
+
+                    <button type="button" class="btn-primary" onclick="processConversation()">Procesează Conversația</button>
+                </div>
+
+                <div id="conversationResults" class="results-section" style="display: none;">
+                    <h2>Rezultate Procesare</h2>
+                    <div id="conversationResultsContent"></div>
+                </div>
+            </div>
+
+            <!-- Medical Records Tab -->
+            <div id="recordsTab" class="tab-content">
+                <div class="form-section">
+                    <h2>Istoric Medical</h2>
+                    <div id="recordsList" class="records-list">
+                        <!-- Records will be loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="loading" class="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p id="loadingText">Se procesează...</p>
+            </div>
+        </main>
+
+        <footer>
+            <p>⚠️ Acest sistem este doar pentru informare. Consultați întotdeauna un medic pentru diagnostic profesional.</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
+

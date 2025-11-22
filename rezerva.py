@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify, session, redirect, u
 import os
 from datetime import datetime
 import json
-import testModel
+import testModel as model
 import sqlite3
 import hashlib
 
@@ -247,20 +247,223 @@ def get_current_user():
         'full_name': session.get('full_name')
     })
 
-@app.route('/api/process-conversation', methods=['POST'])
-def process_contents(contents, structured=False, model_dir=None, max_out_len=None):
-    """
-    Apelează funcția run_with_input din testModel folosind `contents` ca parametru.
-    - contents: str sau list[str]
-    - structured: dacă True, returnează JSON structurat
-    - model_dir / max_out_len: opțional, suprascriu valorile din testModel
-    Returnează rezultatul generat de testModel.run_with_input.
-    """
-    # Folosim valorile default din testModel dacă nu sunt furnizate
-    md = model_dir if model_dir is not None else getattr(testModel, "MODEL_DIR", None)
-    mo = max_out_len if max_out_len is not None else getattr(testModel, "MAX_OUTPUT_LEN", None)
-    return testModel.run_with_input(contents, structured=structured, model_dir=md, max_out_len=mo)
+# @app.route('/api/analyze', methods=['POST'])
+# def analyze():
+#     """API endpoint for symptom analysis"""
+#     try:
+#         data = request.json
+#         symptoms = data.get('symptoms', [])
+#         age = data.get('age', None)
+#         existing_conditions = data.get('existing_conditions', [])
+        
+#         if not symptoms:
+#             return jsonify({'error': 'No symptoms provided'}), 400
+        
+#         # Analyze symptoms
+#         analysis = medical_ai.analyze_symptoms(symptoms)
+        
+#         # Get risk assessment if age provided
+#         if age:
+#             risk_assessment = medical_ai.get_risk_assessment(age, symptoms, existing_conditions)
+#             analysis['risk_assessment'] = risk_assessment
+        
+#         return jsonify(analysis)
+    
+#     except Exception as e:
+#         return jsonify({'error': str(e)}), 500
 
+# @app.route('/api/symptoms', methods=['GET'])
+# def get_symptoms():
+#     """Get list of available symptoms"""
+#     symptoms = list(medical_ai.symptoms_db.keys())
+#     return jsonify({'symptoms': symptoms})
+
+# @app.route('/api/health', methods=['GET'])
+# def health_check():
+#     """Health check endpoint"""
+#     return jsonify({
+#         'status': 'healthy',
+#         'service': 'Medly',
+#         'timestamp': datetime.now().isoformat()
+#     })
+
+# @app.route('/api/process-conversation', methods=['POST'])
+# @require_auth
+# def process_conversation():
+#     """Process doctor-patient conversation and generate structured output"""
+#     try:
+#         if 'user_id' not in session:
+#             return jsonify({'error': 'Authentication required'}), 401
+        
+#         data = request.json
+#         conversation_text = data.get('conversation', '')
+        
+#         if not conversation_text:
+#             return jsonify({'error': 'No conversation text provided'}), 400
+        
+#         # Process conversation with NLP
+#         structured_data = nlp_processor.process_conversation(conversation_text)
+        
+#         # Generate clinical note
+#         clinical_note = nlp_processor.generate_clinical_note(structured_data)
+        
+#         # Generate prescription
+#         prescription = nlp_processor.generate_prescription(structured_data)
+        
+#         # Store in database with doctor_id
+#         conn = sqlite3.connect(app.config['DATABASE'])
+#         c = conn.cursor()
+#         c.execute('''
+#             INSERT INTO medical_records 
+#             (doctor_id, patient_name, age, sex, disease, icd_code, conversation_text, 
+#              structured_data, clinical_note, prescription)
+#             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+#         ''', (
+#             session['user_id'],
+#             structured_data.get('nume_pacient'),
+#             structured_data.get('varsta'),
+#             structured_data.get('sex'),
+#             structured_data.get('boala'),
+#             structured_data.get('cod_ICD'),
+#             conversation_text,
+#             json.dumps(structured_data, ensure_ascii=False),
+#             clinical_note,
+#             prescription
+#         ))
+#         record_id = c.lastrowid
+#         conn.commit()
+#         conn.close()
+        
+#         return jsonify({
+#             'success': True,
+#             'record_id': record_id,
+#             'structured_data': structured_data,
+#             'clinical_note': clinical_note,
+#             'prescription': prescription
+#         })
+    
+#     except Exception as e:
+#         return jsonify({'error': str(e)}), 500
+
+# @app.route('/api/records', methods=['GET'])
+# @require_auth
+# def get_records():
+#     """Get medical records for current doctor"""
+#     try:
+#         if 'user_id' not in session:
+#             return jsonify({'error': 'Authentication required'}), 401
+        
+#         conn = sqlite3.connect(app.config['DATABASE'])
+#         c = conn.cursor()
+#         c.execute('''
+#             SELECT id, patient_name, age, disease, icd_code, created_at
+#             FROM medical_records
+#             WHERE doctor_id = ?
+#             ORDER BY created_at DESC
+#             LIMIT 100
+#         ''', (session['user_id'],))
+#         records = []
+#         for row in c.fetchall():
+#             records.append({
+#                 'id': row[0],
+#                 'patient_name': row[1],
+#                 'age': row[2],
+#                 'disease': row[3],
+#                 'icd_code': row[4],
+#                 'created_at': row[5]
+#             })
+#         conn.close()
+#         return jsonify({'records': records})
+#     except Exception as e:
+#         return jsonify({'error': str(e)}), 500
+
+# @app.route('/api/records/<int:record_id>', methods=['GET'])
+# @require_auth
+# def get_record(record_id):
+#     """Get specific medical record (only if belongs to current doctor)"""
+#     try:
+#         if 'user_id' not in session:
+#             return jsonify({'error': 'Authentication required'}), 401
+        
+#         conn = sqlite3.connect(app.config['DATABASE'])
+#         c = conn.cursor()
+#         c.execute('''
+#             SELECT * FROM medical_records WHERE id = ? AND doctor_id = ?
+#         ''', (record_id, session['user_id']))
+#         row = c.fetchone()
+#         conn.close()
+        
+#         if not row:
+#             return jsonify({'error': 'Record not found'}), 404
+        
+#         return jsonify({
+#             'id': row[0],
+#             'doctor_id': row[1],
+#             'patient_name': row[2],
+#             'age': row[3],
+#             'sex': row[4],
+#             'disease': row[5],
+#             'icd_code': row[6],
+#             'conversation_text': row[7],
+#             'structured_data': json.loads(row[8]),
+#             'clinical_note': row[9],
+#             'prescription': row[10],
+#             'created_at': row[11]
+#         })
+#     except Exception as e:
+#         return jsonify({'error': str(e)}), 500
+
+# @app.route('/api/records/<int:record_id>/update', methods=['POST'])
+# @require_auth
+# def update_record(record_id):
+#     """Update clinical note or prescription for a medical record"""
+#     try:
+#         if 'user_id' not in session:
+#             return jsonify({'error': 'Authentication required'}), 401
+        
+#         data = request.json
+#         update_type = data.get('type')  # 'note' or 'prescription'
+#         content = data.get('content', '')
+        
+#         if update_type not in ['note', 'prescription']:
+#             return jsonify({'error': 'Invalid update type'}), 400
+        
+#         conn = sqlite3.connect(app.config['DATABASE'])
+#         c = conn.cursor()
+        
+#         # Verify record belongs to current doctor
+#         c.execute('SELECT doctor_id FROM medical_records WHERE id = ?', (record_id,))
+#         record = c.fetchone()
+        
+#         if not record:
+#             conn.close()
+#             return jsonify({'error': 'Record not found'}), 404
+        
+#         if record[0] != session['user_id']:
+#             conn.close()
+#             return jsonify({'error': 'Unauthorized'}), 403
+        
+#         # Update the appropriate field
+#         if update_type == 'note':
+#             c.execute('''
+#                 UPDATE medical_records 
+#                 SET clinical_note = ? 
+#                 WHERE id = ? AND doctor_id = ?
+#             ''', (content, record_id, session['user_id']))
+#         elif update_type == 'prescription':
+#             c.execute('''
+#                 UPDATE medical_records 
+#                 SET prescription = ? 
+#                 WHERE id = ? AND doctor_id = ?
+#             ''', (content, record_id, session['user_id']))
+        
+#         conn.commit()
+#         conn.close()
+        
+#         return jsonify({'success': True, 'message': 'Record updated successfully'})
+    
+#     except Exception as e:
+#         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     # Create templates directory if it doesn't exist

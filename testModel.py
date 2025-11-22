@@ -7,6 +7,33 @@ MODEL_DIR = "./finetuned_t5_model"
 MAX_INPUT_LEN = 256
 MAX_OUTPUT_LEN = 300
 
+# ...existing code...
+
+def run_with_input(input_text, structured=False, model_dir=MODEL_DIR, max_out_len=MAX_OUTPUT_LEN):
+    """
+    Rulează procesul de generare pentru un text (sau listă de texte) și returnează rezultatul.
+    - input_text: str sau list[str]
+    - structured: if True returnează structurat (JSON normalizat), altfel text generat
+    - returnează dict sau list[dict]
+    """
+    tokenizer, model, device = load_model(model_dir=model_dir)
+
+    if isinstance(input_text, list):
+        inputs = [f"Completează fișa medicală: {t}" for t in input_text]
+    else:
+        inputs = [f"Completează fișa medicală: {input_text}"]
+
+    if structured:
+        res = generate_structured(tokenizer, model, device, inputs, max_out_len)
+        # dacă a fost un singur text, returnăm un singur obiect
+        return res if len(res) > 1 else (res[0] if res else {})
+    else:
+        preds = generate_texts(tokenizer, model, device, inputs, max_out_len)
+        outs = [{"generated_text": p} for p in preds]
+        return outs if len(outs) > 1 else outs[0]
+
+# ...existing code...
+
 def load_model(model_dir=MODEL_DIR):
     tokenizer = T5Tokenizer.from_pretrained(model_dir)
     model = T5ForConditionalGeneration.from_pretrained(model_dir)

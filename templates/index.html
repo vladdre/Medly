@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medly - Sistem Medical AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        header h1 {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+        
+        .subtitle {
+            opacity: 0.9;
+            font-size: 0.9em;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-info span {
+            font-weight: 500;
+        }
+        
+        .btn-logout {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 8px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .btn-logout:hover {
+            background: white;
+            color: #667eea;
+        }
+        
+        .main-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .input-section {
+            margin-bottom: 30px;
+        }
+        
+        .input-section h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .input-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .input-tab {
+            padding: 12px 24px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .input-tab.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .input-tab:hover {
+            border-color: #667eea;
+        }
+        
+        .input-content {
+            display: none;
+        }
+        
+        .input-content.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 150px;
+        }
+        
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .file-upload {
+            border: 2px dashed #e0e0e0;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-upload:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+        
+        .file-upload input[type="file"] {
+            display: none;
+        }
+        
+        .file-upload-label {
+            display: block;
+            cursor: pointer;
+        }
+        
+        .file-upload-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        
+        .file-info {
+            margin-top: 10px;
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .results-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .results-section h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .result-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .result-content pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .download-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        .download-btn:hover {
+            background: #45a049;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 1px solid #fcc;
+        }
+        
+        .success-message {
+            background: #efe;
+            color: #3c3;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 1px solid #cfc;
+        }
+        
+        .voice-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn-record {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-record:hover {
+            background: #d32f2f;
+        }
+        
+        .btn-record.recording {
+            background: #4CAF50;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .btn-record.recording:hover {
+            background: #45a049;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .btn-stop {
+            background: #ff9800;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-stop:hover {
+            background: #f57c00;
+        }
+        
+        .recording-status {
+            margin-top: 10px;
+            padding: 10px;
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 5px;
+            color: #856404;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div>
+                    <h1>🏥 Medly</h1>
+                    <p class="subtitle">Sistem Medical AI - Procesare automată</p>
+                </div>
+                <div class="user-info">
+                    <span id="userName">Utilizator</span>
+                    <button class="btn-logout" onclick="logout()">Deconectare</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="input-section">
+                <h2>Procesare Text sau Audio</h2>
+                
+                <div class="input-tabs">
+                    <div class="input-tab active" onclick="switchInputType('text')">Text</div>
+                    <div class="input-tab" onclick="switchInputType('audio')">Audio</div>
+                </div>
+                
+                <!-- Text Input -->
+                <div id="textInput" class="input-content active">
+                    <div class="form-group">
+                        <label for="inputText">Introduceți textul:</label>
+                        <textarea id="inputText" placeholder="Introduceți textul pentru procesare..."></textarea>
+                    </div>
+                </div>
+                
+                <!-- Audio Input -->
+                <div id="audioInput" class="input-content">
+                    <div class="form-group">
+                        <label for="conversationText">Text înregistrat:</label>
+                        <textarea id="conversationText" rows="8" placeholder="Textul înregistrat va apărea aici..."></textarea>
+                        <p style="font-size: 0.85em; color: #666; margin-top: 5px;">
+                            💡 <strong>Notă:</strong> Funcționează cel mai bine în Chrome sau Edge. Browserul va cere permisiunea pentru microfon.
+                        </p>
+                    </div>
+                    
+                    <div class="voice-controls">
+                        <button id="recordBtn" class="btn-record" onclick="toggleRecording()">
+                            <span id="recordIcon">🎤</span>
+                            <span id="recordText">Începe Înregistrarea</span>
+                        </button>
+                        <button id="stopBtn" class="btn-stop" onclick="stopRecording()" style="display: none;">
+                            ⏹️ Oprește
+                        </button>
+                    </div>
+                    
+                    <div id="recordingStatus" class="recording-status" style="display: none;">
+                        🎙️ Se înregistrează... Vorbiți acum.
+                    </div>
+                </div>
+                
+                <button class="btn-primary" onclick="processInput()" id="processBtn">Procesează</button>
+            </div>
+
+            <div id="loading" class="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Se procesează...</p>
+            </div>
+
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+            <div id="successMessage" class="success-message" style="display: none;"></div>
+
+            <div id="resultsSection" class="results-section" style="display: none;">
+                <h2>Rezultate Procesare</h2>
+                <div id="resultsContent" class="result-content"></div>
+                <button class="download-btn" id="downloadBtn" onclick="downloadResult()" style="display: none;">Descarcă Rezultatul</button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let currentInputType = 'text';
+        let selectedFile = null;
+        let currentResultFilename = null;
+        let recognition = null;
+        let isRecording = false;
+        let recordedText = '';
+
+        // Speech Recognition
+        function initSpeechRecognition() {
+            // Verifică dacă browserul suportă Speech Recognition
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                
+                recognition.continuous = true;        // Continuă să înregistreze
+                recognition.interimResults = true;    // Arată rezultate în timp real
+                recognition.lang = 'ro-RO';           // Limba română
+                
+                // Event handler pentru rezultate
+                recognition.onresult = (event) => {
+                    let interimTranscript = '';   // Text temporar (în timp ce vorbești)
+                    let finalTranscript = '';     // Text final (confirmat)
+                    
+                    // Parcurge toate rezultatele
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        const transcript = event.results[i][0].transcript;
+                        if (event.results[i].isFinal) {
+                            finalTranscript += transcript + ' ';  // Text final
+                            recordedText += transcript + ' ';  // Adaugă la textul înregistrat
+                        } else {
+                            interimTranscript += transcript;        // Text temporar
+                        }
+                    }
+                    
+                    // Actualizează textarea cu textul înregistrat
+                    const textarea = document.getElementById('conversationText');
+                    if (textarea) {
+                        textarea.value = recordedText + interimTranscript;
+                    }
+                };
+                
+                // Gestionare erori
+                recognition.onerror = (event) => {
+                    console.error('Speech recognition error:', event.error);
+                    
+                    // Mesaje specifice pentru diferite tipuri de erori
+                    let errorMessage = '';
+                    switch(event.error) {
+                        case 'no-speech':
+                            // Ignoră erorile de "no-speech" - nu e o problemă reală
+                            return;
+                        case 'audio-capture':
+                            errorMessage = 'Nu s-a putut accesa microfonul. Verificați permisiunile browserului.';
+                            break;
+                        case 'not-allowed':
+                            errorMessage = 'Accesul la microfon a fost refuzat. Vă rugăm să permiteți accesul în setările browserului.';
+                            break;
+                        case 'network':
+                            errorMessage = 'Eroare de rețea. Verificați conexiunea la internet.';
+                            break;
+                        case 'aborted':
+                            // Ignoră erorile de abort - sunt normale când oprim manual
+                            return;
+                        default:
+                            errorMessage = 'Eroare la recunoașterea vocii: ' + event.error;
+                    }
+                    
+                    if (errorMessage) {
+                        stopRecording();
+                        alert(errorMessage);
+                    }
+                };
+                
+                // Când se oprește înregistrarea
+                recognition.onend = () => {
+                    if (isRecording) {
+                        // Repornește dacă încă se înregistrează
+                        try {
+                            setTimeout(() => {
+                                if (isRecording && recognition) {
+                                    recognition.start();
+                                }
+                            }, 100);
+                        } catch (e) {
+                            console.error('Error restarting recognition:', e);
+                            isRecording = false;
+                        }
+                    }
+                };
+                
+                // Când începe înregistrarea
+                recognition.onstart = () => {
+                    console.log('Speech recognition started');
+                };
+            } else {
+                console.warn('Speech recognition not supported in this browser');
+                const recordBtn = document.getElementById('recordBtn');
+                const audioTab = document.querySelector('.input-tab[onclick*="audio"]');
+                if (recordBtn) {
+                    recordBtn.style.display = 'none';
+                    recordBtn.disabled = true;
+                }
+                if (audioTab) {
+                    audioTab.style.opacity = '0.5';
+                    audioTab.title = 'Recunoașterea vocală nu este suportată în acest browser. Folosiți Chrome sau Edge.';
+                }
+            }
+        }
+
+        // Load user info on page load
+        window.addEventListener('DOMContentLoaded', async function() {
+            try {
+                const response = await fetch('/api/current-user');
+                if (response.ok) {
+                    const user = await response.json();
+                    document.getElementById('userName').textContent = user.full_name || user.username;
+                } else {
+                    window.location.href = '/login';
+                }
+            } catch (error) {
+                window.location.href = '/login';
+            }
+            
+            // Initialize speech recognition
+            initSpeechRecognition();
+        });
+
+        function switchInputType(type) {
+            currentInputType = type;
+            
+            // Stop recording if switching away from audio
+            if (type !== 'audio' && isRecording) {
+                stopRecording();
+            }
+            
+            // Update tabs
+            document.querySelectorAll('.input-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update content
+            document.getElementById('textInput').classList.toggle('active', type === 'text');
+            document.getElementById('audioInput').classList.toggle('active', type === 'audio');
+            
+            // Clear previous results
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+
+        function toggleRecording() {
+            if (!isRecording) {
+                startRecording();
+            } else {
+                stopRecording();
+            }
+        }
+
+        function startRecording() {
+            if (!recognition) {
+                alert('Recunoașterea vocală nu este disponibilă în acest browser. Vă rugăm să folosiți Chrome sau Edge.');
+                return;
+            }
+            
+            // Salvează textul existent
+            const textarea = document.getElementById('conversationText');
+            if (textarea) {
+                recordedText = textarea.value;
+            }
+            
+            try {
+                isRecording = true;
+                recognition.start();
+                
+                // Update UI
+                const recordBtn = document.getElementById('recordBtn');
+                const stopBtn = document.getElementById('stopBtn');
+                const recordIcon = document.getElementById('recordIcon');
+                const recordTextEl = document.getElementById('recordText');
+                const statusDiv = document.getElementById('recordingStatus');
+                
+                if (recordBtn) recordBtn.classList.add('recording');
+                if (recordIcon) recordIcon.textContent = '🔴';
+                if (recordTextEl) recordTextEl.textContent = 'Se înregistrează...';
+                if (stopBtn) stopBtn.style.display = 'inline-block';
+                if (statusDiv) statusDiv.style.display = 'block';
+            } catch (e) {
+                console.error('Error starting recognition:', e);
+                isRecording = false;
+                alert('Eroare la pornirea înregistrării: ' + e.message + '. Asigurați-vă că ați permis accesul la microfon.');
+            }
+        }
+
+        function stopRecording() {
+            if (recognition) {
+                isRecording = false;
+                try {
+                    recognition.stop();
+                } catch (e) {
+                    console.error('Error stopping recognition:', e);
+                }
+                
+                // Update recorded text
+                const textarea = document.getElementById('conversationText');
+                if (textarea) {
+                    recordedText = textarea.value;
+                }
+                
+                // Update UI
+                const recordBtn = document.getElementById('recordBtn');
+                const stopBtn = document.getElementById('stopBtn');
+                const recordIcon = document.getElementById('recordIcon');
+                const recordTextEl = document.getElementById('recordText');
+                const statusDiv = document.getElementById('recordingStatus');
+                
+                if (recordBtn) recordBtn.classList.remove('recording');
+                if (recordIcon) recordIcon.textContent = '🎤';
+                if (recordTextEl) recordTextEl.textContent = 'Începe Înregistrarea';
+                if (stopBtn) stopBtn.style.display = 'none';
+                if (statusDiv) statusDiv.style.display = 'none';
+            }
+        }
+
+        async function processInput() {
+            const processBtn = document.getElementById('processBtn');
+            const loading = document.getElementById('loading');
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            const resultsSection = document.getElementById('resultsSection');
+            
+            // Hide previous messages
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+            resultsSection.style.display = 'none';
+            
+            // Stop recording if active
+            if (isRecording) {
+                stopRecording();
+            }
+            
+            // Validate input
+            let inputText = '';
+            if (currentInputType === 'text') {
+                inputText = document.getElementById('inputText').value.trim();
+                if (!inputText) {
+                    errorDiv.textContent = 'Vă rugăm să introduceți text';
+                    errorDiv.style.display = 'block';
+                    return;
+                }
+            } else {
+                inputText = document.getElementById('conversationText').value.trim();
+                if (!inputText) {
+                    errorDiv.textContent = 'Vă rugăm să înregistrați sau să introduceți text';
+                    errorDiv.style.display = 'block';
+                    return;
+                }
+            }
+            
+            // Show loading
+            processBtn.disabled = true;
+            loading.style.display = 'block';
+            
+            try {
+                const formData = new FormData();
+                formData.append('text', inputText);
+                formData.append('result_type', 'structured');
+                
+                const response = await fetch('/api/process', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    // Display results
+                    const resultsContent = document.getElementById('resultsContent');
+                    resultsContent.innerHTML = '<pre>' + JSON.stringify(data.result, null, 2) + '</pre>';
+                    
+                    if (data.file_saved && data.filename) {
+                        currentResultFilename = data.filename;
+                        document.getElementById('downloadBtn').style.display = 'block';
+                        successDiv.textContent = `Rezultatul a fost salvat în fișier: ${data.filename}`;
+                        successDiv.style.display = 'block';
+                    }
+                    
+                    resultsSection.style.display = 'block';
+                } else {
+                    errorDiv.textContent = data.error || 'Eroare la procesare';
+                    errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Eroare de conexiune. Vă rugăm să încercați din nou.';
+                errorDiv.style.display = 'block';
+            } finally {
+                processBtn.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+
+        function downloadResult() {
+            if (currentResultFilename) {
+                window.location.href = `/api/download-result/${currentResultFilename}`;
+            }
+        }
+
+        async function logout() {
+            try {
+                const response = await fetch('/logout', {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    window.location.href = '/login';
+                }
+            } catch (error) {
+                console.error('Error logging out:', error);
+            }
+        }
+    </script>
+</body>
+</html>
+

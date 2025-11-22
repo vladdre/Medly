@@ -1,0 +1,7 @@
+Flask==3.0.0
+Werkzeug==3.0.1
+SpeechRecognition==3.10.0
+torch>=2.0.0
+transformers>=4.30.0
+pydub==0.25.1
+

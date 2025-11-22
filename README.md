@@ -1,1 +1,1 @@
-# iMed
+# Medly

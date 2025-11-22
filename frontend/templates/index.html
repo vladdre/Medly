@@ -13,7 +13,7 @@
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f5f5;
+            background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
             min-height: 100vh;
         }
         
@@ -24,12 +24,12 @@
         }
         
         header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
             color: white;
-            padding: 20px;
-            border-radius: 10px;
+            padding: 25px 30px;
+            border-radius: 12px;
             margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 16px rgba(46, 125, 50, 0.3);
         }
         
         .header-content {
@@ -72,14 +72,15 @@
         
         .btn-logout:hover {
             background: white;
-            color: #667eea;
+            color: #2E7D32;
         }
         
         .main-content {
             background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(46, 125, 50, 0.15);
+            border: 1px solid #C8E6C9;
         }
         
         .input-section {
@@ -108,13 +109,13 @@
         }
         
         .input-tab.active {
-            background: #667eea;
+            background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
             color: white;
-            border-color: #667eea;
+            border-color: #2E7D32;
         }
         
         .input-tab:hover {
-            border-color: #667eea;
+            border-color: #4CAF50;
         }
         
         .input-content {
@@ -149,7 +150,8 @@
         
         .form-group textarea:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
         }
         
         .file-upload {
@@ -162,8 +164,8 @@
         }
         
         .file-upload:hover {
-            border-color: #667eea;
-            background: #f8f9ff;
+            border-color: #4CAF50;
+            background: #E8F5E9;
         }
         
         .file-upload input[type="file"] {
@@ -187,7 +189,7 @@
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
             color: white;
             border: none;
             padding: 14px 30px;
@@ -200,7 +202,8 @@
         
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+            background: linear-gradient(135deg, #66BB6A 0%, #4CAF50 100%);
         }
         
         .btn-primary:disabled {
@@ -211,10 +214,10 @@
         
         .results-section {
             margin-top: 30px;
-            padding: 20px;
-            background: #f8f9ff;
-            border-radius: 8px;
-            border: 2px solid #e0e0e0;
+            padding: 25px;
+            background: linear-gradient(135deg, #F1F8E9 0%, #E8F5E9 100%);
+            border-radius: 12px;
+            border: 2px solid #C8E6C9;
         }
         
         .results-section h2 {
@@ -239,16 +242,23 @@
         
         .result-field {
             margin-bottom: 25px;
-            padding: 15px;
+            padding: 20px;
             background: white;
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
+            border-radius: 10px;
+            border-left: 5px solid #4CAF50;
+            box-shadow: 0 2px 8px rgba(46, 125, 50, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .result-field:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.15);
         }
         
         .result-field-title {
             font-size: 18px;
             font-weight: 600;
-            color: #667eea;
+            color: #2E7D32;
             margin-bottom: 12px;
             display: flex;
             align-items: center;
@@ -275,7 +285,7 @@
             content: "•";
             position: absolute;
             left: 0;
-            color: #667eea;
+            color: #4CAF50;
             font-weight: bold;
             font-size: 20px;
         }
@@ -306,8 +316,8 @@
         }
         
         .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
+            border: 4px solid #E8F5E9;
+            border-top: 4px solid #4CAF50;
             border-radius: 50%;
             width: 50px;
             height: 50px;
@@ -402,6 +412,117 @@
             color: #856404;
             font-size: 0.9em;
         }
+        
+        .document-section {
+            margin-top: 30px;
+            padding: 25px;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid #C8E6C9;
+            box-shadow: 0 4px 20px rgba(46, 125, 50, 0.15);
+        }
+        
+        .document-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #E8F5E9;
+        }
+        
+        .document-header h2 {
+            color: #2E7D32;
+            margin: 0;
+            font-size: 1.5em;
+        }
+        
+        .btn-edit {
+            background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-edit:hover {
+            background: linear-gradient(135deg, #66BB6A 0%, #4CAF50 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+        
+        .document-content {
+            margin-bottom: 20px;
+        }
+        
+        .document-display {
+            background: #F9F9F9;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #E0E0E0;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.8;
+            color: #333;
+            min-height: 200px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .document-edit {
+            width: 100%;
+            padding: 20px;
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.8;
+            resize: vertical;
+            min-height: 200px;
+            background: white;
+        }
+        
+        .document-edit:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+        
+        .document-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .download-btn {
+            background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .download-btn:hover {
+            background: linear-gradient(135deg, #66BB6A 0%, #4CAF50 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+        
+        .download-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
     </style>
 </head>
 <body>
@@ -472,10 +593,34 @@
             <div id="errorMessage" class="error-message" style="display: none;"></div>
             <div id="successMessage" class="success-message" style="display: none;"></div>
 
-            <div id="resultsSection" class="results-section" style="display: none;">
-                <h2>Rezultate Procesare</h2>
-                <div id="resultsContent" class="result-content"></div>
-                <button class="download-btn" id="downloadBtn" onclick="downloadResult()" style="display: none;">Descarcă Rezultatul</button>
+            <!-- Notă Clinică Section -->
+            <div id="notaClinicaSection" class="document-section" style="display: none;">
+                <div class="document-header">
+                    <h2>📄 Notă Clinică</h2>
+                    <button class="btn-edit" id="editNotaBtn" onclick="toggleEditNota()">✏️ Editează</button>
+                </div>
+                <div class="document-content">
+                    <div id="notaClinicaDisplay" class="document-display"></div>
+                    <textarea id="notaClinicaEdit" class="document-edit" style="display: none;"></textarea>
+                </div>
+                <div class="document-actions">
+                    <button class="download-btn" id="downloadNotaBtn" onclick="downloadNotaClinica()">💾 Descarcă Notă Clinică</button>
+                </div>
+            </div>
+
+            <!-- Rețetă Medicală Section -->
+            <div id="retetaMedialaSection" class="document-section" style="display: none;">
+                <div class="document-header">
+                    <h2>💊 Rețetă Medicală</h2>
+                    <button class="btn-edit" id="editRetetaBtn" onclick="toggleEditReteta()">✏️ Editează</button>
+                </div>
+                <div class="document-content">
+                    <div id="retetaMedialaDisplay" class="document-display"></div>
+                    <textarea id="retetaMedialaEdit" class="document-edit" style="display: none;"></textarea>
+                </div>
+                <div class="document-actions">
+                    <button class="download-btn" id="downloadRetetaBtn" onclick="downloadRetetaMediala()">💾 Descarcă Rețetă</button>
+                </div>
             </div>
         </main>
     </div>
@@ -487,6 +632,10 @@
         let recognition = null;
         let isRecording = false;
         let recordedText = '';
+        let currentNotaClinica = '';
+        let currentRetetaMediala = '';
+        let isEditingNota = false;
+        let isEditingReteta = false;
 
         // Speech Recognition
         function initSpeechRecognition() {
@@ -515,9 +664,9 @@
                         }
                     }
                     
-                    // Actualizează textarea cu textul înregistrat
+                    // Actualizează textarea cu textul înregistrat + textul temporar
                     const textarea = document.getElementById('conversationText');
-                    if (textarea) {
+                    if (textarea && isRecording) {
                         textarea.value = recordedText + interimTranscript;
                     }
                 };
@@ -627,7 +776,8 @@
             document.getElementById('audioInput').classList.toggle('active', type === 'audio');
             
             // Clear previous results
-            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('notaClinicaSection').style.display = 'none';
+            document.getElementById('retetaMedialaSection').style.display = 'none';
             document.getElementById('errorMessage').style.display = 'none';
             document.getElementById('successMessage').style.display = 'none';
         }
@@ -684,10 +834,15 @@
                     console.error('Error stopping recognition:', e);
                 }
                 
-                // Update recorded text
+                // Keep the current text in textarea (which includes interim transcript)
+                // and update recordedText to match, so it doesn't duplicate on next recording
                 const textarea = document.getElementById('conversationText');
                 if (textarea) {
-                    recordedText = textarea.value;
+                    // Save the current text (including any interim transcript) to recordedText
+                    // This preserves what was visible when stopping
+                    recordedText = textarea.value.trim();
+                    // Keep the text visible (don't clear it)
+                    textarea.value = recordedText;
                 }
                 
                 // Update UI
@@ -710,12 +865,12 @@
             const loading = document.getElementById('loading');
             const errorDiv = document.getElementById('errorMessage');
             const successDiv = document.getElementById('successMessage');
-            const resultsSection = document.getElementById('resultsSection');
             
-            // Hide previous messages
+            // Hide previous messages and sections
             errorDiv.style.display = 'none';
             successDiv.style.display = 'none';
-            resultsSection.style.display = 'none';
+            document.getElementById('notaClinicaSection').style.display = 'none';
+            document.getElementById('retetaMedialaSection').style.display = 'none';
             
             // Stop recording if active
             if (isRecording) {
@@ -757,21 +912,25 @@
                 const data = await response.json();
                 
                 if (response.ok && data.success) {
-                    // Store result data for download
+                    // Store result data
                     window.lastProcessedResult = {
                         input_text: data.input_text,
-                        result: data.result
+                        result: data.result,
+                        nota_clinica: data.nota_clinica,
+                        reteta_mediala: data.reteta_mediala
                     };
                     
-                    // Display results in formatted way
-                    const resultsContent = document.getElementById('resultsContent');
-                    resultsContent.innerHTML = formatResultDisplay(data.result);
+                    // Store current documents
+                    currentNotaClinica = data.nota_clinica || '';
+                    currentRetetaMediala = data.reteta_mediala || '';
                     
-                    // Show download button (file not saved yet)
-                    currentResultFilename = null;
-                    document.getElementById('downloadBtn').style.display = 'block';
+                    // Display both documents
+                    displayNotaClinica(currentNotaClinica);
+                    displayRetetaMediala(currentRetetaMediala);
                     
-                    resultsSection.style.display = 'block';
+                    // Show both sections
+                    document.getElementById('notaClinicaSection').style.display = 'block';
+                    document.getElementById('retetaMedialaSection').style.display = 'block';
                 } else {
                     errorDiv.textContent = data.error || 'Eroare la procesare';
                     errorDiv.style.display = 'block';
@@ -785,13 +944,69 @@
             }
         }
 
-        async function downloadResult() {
-            if (!window.lastProcessedResult) {
-                alert('Nu există rezultat de descărcat. Procesați mai întâi un text.');
+        function displayNotaClinica(content) {
+            const displayDiv = document.getElementById('notaClinicaDisplay');
+            const editTextarea = document.getElementById('notaClinicaEdit');
+            displayDiv.textContent = content;
+            editTextarea.value = content;
+        }
+        
+        function displayRetetaMediala(content) {
+            const displayDiv = document.getElementById('retetaMedialaDisplay');
+            const editTextarea = document.getElementById('retetaMedialaEdit');
+            displayDiv.textContent = content;
+            editTextarea.value = content;
+        }
+        
+        function toggleEditNota() {
+            isEditingNota = !isEditingNota;
+            const displayDiv = document.getElementById('notaClinicaDisplay');
+            const editTextarea = document.getElementById('notaClinicaEdit');
+            const editBtn = document.getElementById('editNotaBtn');
+            
+            if (isEditingNota) {
+                displayDiv.style.display = 'none';
+                editTextarea.style.display = 'block';
+                editTextarea.focus();
+                editBtn.textContent = '💾 Salvează';
+            } else {
+                // Save edited content
+                currentNotaClinica = editTextarea.value;
+                displayDiv.textContent = currentNotaClinica;
+                displayDiv.style.display = 'block';
+                editTextarea.style.display = 'none';
+                editBtn.textContent = '✏️ Editează';
+            }
+        }
+        
+        function toggleEditReteta() {
+            isEditingReteta = !isEditingReteta;
+            const displayDiv = document.getElementById('retetaMedialaDisplay');
+            const editTextarea = document.getElementById('retetaMedialaEdit');
+            const editBtn = document.getElementById('editRetetaBtn');
+            
+            if (isEditingReteta) {
+                displayDiv.style.display = 'none';
+                editTextarea.style.display = 'block';
+                editTextarea.focus();
+                editBtn.textContent = '💾 Salvează';
+            } else {
+                // Save edited content
+                currentRetetaMediala = editTextarea.value;
+                displayDiv.textContent = currentRetetaMediala;
+                displayDiv.style.display = 'block';
+                editTextarea.style.display = 'none';
+                editBtn.textContent = '✏️ Editează';
+            }
+        }
+        
+        async function downloadNotaClinica() {
+            if (!currentNotaClinica) {
+                alert('Nu există Notă Clinică de descărcat. Procesați mai întâi un text.');
                 return;
             }
             
-            const downloadBtn = document.getElementById('downloadBtn');
+            const downloadBtn = document.getElementById('downloadNotaBtn');
             const successDiv = document.getElementById('successMessage');
             const errorDiv = document.getElementById('errorMessage');
             
@@ -799,100 +1014,94 @@
             downloadBtn.textContent = 'Se salvează...';
             
             try {
-                // Save result to file first
-                const saveResponse = await fetch('/api/save-result', {
+                // Get current content (from edit if editing, otherwise from display)
+                const content = isEditingNota 
+                    ? document.getElementById('notaClinicaEdit').value 
+                    : currentNotaClinica;
+                
+                // Save nota clinica to file first
+                const saveResponse = await fetch('/api/save-nota-clinica', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        input_text: window.lastProcessedResult.input_text,
-                        result: window.lastProcessedResult.result,
-                        result_type: 'text'
+                        nota_clinica: content
                     })
                 });
                 
                 const saveData = await saveResponse.json();
                 
                 if (saveResponse.ok && saveData.success) {
-                    currentResultFilename = saveData.filename;
                     // Download the file
                     window.location.href = `/api/download-result/${saveData.filename}`;
                     
-                    successDiv.textContent = 'Rezultatul a fost salvat și descărcat cu succes!';
+                    successDiv.textContent = 'Nota clinică a fost salvată și descărcată cu succes!';
                     successDiv.style.display = 'block';
                     errorDiv.style.display = 'none';
                 } else {
-                    errorDiv.textContent = saveData.error || 'Eroare la salvarea rezultatului';
+                    errorDiv.textContent = saveData.error || 'Eroare la salvarea notei clinice';
                     errorDiv.style.display = 'block';
                 }
             } catch (error) {
-                errorDiv.textContent = 'Eroare de conexiune la salvarea rezultatului';
+                errorDiv.textContent = 'Eroare de conexiune la salvarea notei clinice';
                 errorDiv.style.display = 'block';
             } finally {
                 downloadBtn.disabled = false;
-                downloadBtn.textContent = 'Descarcă Rezultatul';
+                downloadBtn.textContent = '💾 Descarcă Notă Clinică';
             }
         }
-
-        function formatResultDisplay(result) {
-            if (!result) return '<p>Nu s-au găsit rezultate.</p>';
-            
-            let html = '';
-            
-            // Boala
-            html += '<div class="result-field">';
-            html += '<div class="result-field-title">🏥 Boală</div>';
-            html += '<div class="result-field-content">';
-            html += `<p>${result.boala || 'Nu a fost identificată'}</p>`;
-            html += '</div></div>';
-            
-            // Tratament Recomandat
-            html += '<div class="result-field">';
-            html += '<div class="result-field-title">💊 Tratament Recomandat</div>';
-            html += '<div class="result-field-content">';
-            if (result.tratament_recomandat && result.tratament_recomandat.length > 0) {
-                html += '<ul>';
-                result.tratament_recomandat.forEach(item => {
-                    html += `<li>${item}</li>`;
-                });
-                html += '</ul>';
-            } else {
-                html += '<p>Nu sunt recomandate medicamente</p>';
+        
+        async function downloadRetetaMediala() {
+            if (!currentRetetaMediala) {
+                alert('Nu există Rețetă Medicală de descărcat. Procesați mai întâi un text.');
+                return;
             }
-            html += '</div></div>';
             
-            // Investigatii Suplimentare
-            html += '<div class="result-field">';
-            html += '<div class="result-field-title">🔬 Investigații Suplimentare</div>';
-            html += '<div class="result-field-content">';
-            if (result.investigatii_suplimentare && result.investigatii_suplimentare.length > 0) {
-                html += '<ul>';
-                result.investigatii_suplimentare.forEach(item => {
-                    html += `<li>${item}</li>`;
+            const downloadBtn = document.getElementById('downloadRetetaBtn');
+            const successDiv = document.getElementById('successMessage');
+            const errorDiv = document.getElementById('errorMessage');
+            
+            downloadBtn.disabled = true;
+            downloadBtn.textContent = 'Se salvează...';
+            
+            try {
+                // Get current content (from edit if editing, otherwise from display)
+                const content = isEditingReteta 
+                    ? document.getElementById('retetaMedialaEdit').value 
+                    : currentRetetaMediala;
+                
+                // Save reteta medicala to file first
+                const saveResponse = await fetch('/api/save-reteta-mediala', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        reteta_mediala: content
+                    })
                 });
-                html += '</ul>';
-            } else {
-                html += '<p>Nu sunt recomandate investigații</p>';
+                
+                const saveData = await saveResponse.json();
+                
+                if (saveResponse.ok && saveData.success) {
+                    // Download the file
+                    window.location.href = `/api/download-result/${saveData.filename}`;
+                    
+                    successDiv.textContent = 'Rețeta medicală a fost salvată și descărcată cu succes!';
+                    successDiv.style.display = 'block';
+                    errorDiv.style.display = 'none';
+                } else {
+                    errorDiv.textContent = saveData.error || 'Eroare la salvarea rețetei medicale';
+                    errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Eroare de conexiune la salvarea rețetei medicale';
+                errorDiv.style.display = 'block';
+            } finally {
+                downloadBtn.disabled = false;
+                downloadBtn.textContent = '💾 Descarcă Rețetă';
             }
-            html += '</div></div>';
-            
-            // Recomandari Suplimentare
-            html += '<div class="result-field">';
-            html += '<div class="result-field-title">📋 Recomandări Suplimentare</div>';
-            html += '<div class="result-field-content">';
-            if (result.recomandari_suplimentare && result.recomandari_suplimentare.length > 0) {
-                html += '<ul>';
-                result.recomandari_suplimentare.forEach(item => {
-                    html += `<li>${item}</li>`;
-                });
-                html += '</ul>';
-            } else {
-                html += '<p>Nu sunt recomandări suplimentare</p>';
-            }
-            html += '</div></div>';
-            
-            return html;
         }
 
         async function logout() {
@@ -911,4 +1120,5 @@
     </script>
 </body>
 </html>
+
 

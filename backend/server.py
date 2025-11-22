@@ -202,8 +202,358 @@ def format_result(result):
         "recomandari_suplimentare": recomandari_list if recomandari_list else ["Nu sunt recomandări suplimentare"]
     }
 
+def extract_istoric_medical(input_text):
+    """Extract only medical history from input text (e.g., 'fumător de 30 de ani', 'istoric de hipertensiune')"""
+    if not input_text:
+        return ""
+    
+    import re
+    
+    istoric_parts = []
+    text_lower = input_text.lower()
+    
+    # Specific patterns for medical history
+    history_patterns = [
+        # Smoking history
+        (r'fumător\s+(?:de\s+)?\d+\s+ani', 'fumător'),
+        (r'fumat\s+(?:de\s+)?\d+\s+ani', 'fumat'),
+        (r'fumător\s+activ', 'fumător'),
+        (r'fumător\s+în\s+trecut', 'fumător'),
+        # Medical history phrases
+        (r'istoric\s+de\s+[^.!?]+', 'istoric'),
+        (r'antecedente\s+[^.!?]+', 'antecedente'),
+        (r'în\s+trecut\s+[^.!?]+', 'trecut'),
+        (r'precedent\s+[^.!?]+', 'precedent'),
+        # Chronic conditions
+        (r'hipertensiune\s+(?:de\s+)?\d+\s+ani', 'hipertensiune'),
+        (r'diabet\s+(?:de\s+)?\d+\s+ani', 'diabet'),
+    ]
+    
+    # Extract specific history patterns
+    for pattern, keyword in history_patterns:
+        matches = re.finditer(pattern, text_lower, re.IGNORECASE)
+        for match in matches:
+            start, end = match.span()
+            # Get original case from input
+            extracted = input_text[start:end].strip()
+            # Clean up - remove if it's too long (probably not just history)
+            if len(extracted) < 100:  # Reasonable length for history
+                istoric_parts.append(extracted)
+    
+    # If no specific patterns, extract sentences with history keywords (but exclude current symptoms/treatment)
+    if not istoric_parts:
+        sentences = re.split(r'[.!?]\s+', input_text)
+        history_keywords = ['fumător', 'fumat', 'istoric', 'antecedente', 'în trecut', 'precedent', 'hipertensiune', 'diabet']
+        exclude_keywords = ['simptome', 'tratament', 'medicament', 'recomand', 'diagnostic', 'examen', 'investigație']
+        
+        for sentence in sentences:
+            sentence_lower = sentence.lower().strip()
+            # Check if sentence contains history keywords
+            has_history = any(keyword in sentence_lower for keyword in history_keywords)
+            # Check if sentence is about current treatment/symptoms (exclude these)
+            has_current = any(keyword in sentence_lower for keyword in exclude_keywords)
+            
+            if has_history and not has_current and len(sentence.strip()) < 150:
+                istoric_parts.append(sentence.strip())
+    
+    # Remove duplicates while preserving order
+    seen = set()
+    unique_parts = []
+    for part in istoric_parts:
+        part_lower = part.lower()
+        if part_lower not in seen:
+            seen.add(part_lower)
+            unique_parts.append(part)
+    
+    # Join all history parts
+    if unique_parts:
+        return ', '.join(unique_parts)
+    
+    return ""
+
+def extract_medicamente_from_input(input_text, formatted_result):
+    """Extract medications from input text using exact words from input"""
+    if not input_text:
+        return []
+    
+    import re
+    
+    # Get medications from formatted result
+    tratament = formatted_result.get('tratament_recomandat', [])
+    if not tratament:
+        return []
+    
+    medications_found = []
+    input_lower = input_text.lower()
+    
+    for item in tratament:
+        if isinstance(item, dict):
+            nume_model = item.get('nume', '').lower()
+            doza_model = item.get('doza', '')
+            administrare_model = item.get('administrare', '')
+        else:
+            # If it's a string, try to extract name
+            nume_model = item.lower() if isinstance(item, str) else ''
+            doza_model = ''
+            administrare_model = ''
+        
+        # Search for medication name in input text (try partial matches too)
+        if nume_model:
+            # Split medication name into words for better matching
+            nume_words = nume_model.split()
+            # Try to find the medication name in input (exact or partial)
+            pattern = re.escape(nume_model)
+            match = re.search(pattern, input_lower, re.IGNORECASE)
+            
+            # If exact match not found, try to find first significant word
+            if not match and len(nume_words) > 0:
+                first_word = nume_words[0]
+                if len(first_word) > 3:  # Only if word is significant
+                    pattern = r'\b' + re.escape(first_word) + r'\b'
+                    match = re.search(pattern, input_lower, re.IGNORECASE)
+            
+            if match:
+                # Find the sentence or phrase containing this medication
+                start_pos = match.start()
+                # Get wider context around the medication (100 chars before and 150 after)
+                context_start = max(0, start_pos - 100)
+                context_end = min(len(input_text), start_pos + len(nume_model) + 150)
+                context = input_text[context_start:context_end]
+                context_lower = context.lower()
+                
+                # Extract medication name with exact case from input
+                med_name_in_input = input_text[match.start():match.end()]
+                
+                # Try to extract dose from context - look for patterns like "100-200 mcg", "200 mg", etc.
+                dose_patterns = [
+                    r'(\d+\s*-\s*\d+\s*(?:mg|mcg|ml|g|comprim|tablet|pastil|doz))',
+                    r'(\d+\s*(?:mg|mcg|ml|g|comprim|tablet|pastil|doz))',
+                ]
+                extracted_dose = ''
+                for pattern in dose_patterns:
+                    dose_match = re.search(pattern, context_lower, re.IGNORECASE)
+                    if dose_match:
+                        # Get exact case from context
+                        dose_start = context_start + dose_match.start()
+                        dose_end = context_start + dose_match.end()
+                        extracted_dose = input_text[dose_start:dose_end]
+                        break
+                
+                # If no dose found in context, use from model
+                if not extracted_dose:
+                    extracted_dose = doza_model
+                
+                # Try to extract administration - look for "pe zi", "de X ori", "X comprimat pe zi"
+                admin_patterns = [
+                    r'(\d+\s*(?:comprim|tablet|pastil|doz)[^.]*(?:pe\s+zi|zi))',
+                    r'(\d+\s*(?:comprim|tablet|pastil|doz)[^.]*)',
+                    r'(\d+\s*(?:ori|dat)[^.]*(?:pe\s+zi|zi))',
+                    r'(pe\s+zi)',
+                    r'(de\s+\d+\s+ori[^.]*)',
+                ]
+                extracted_admin = ''
+                for pattern in admin_patterns:
+                    admin_match = re.search(pattern, context_lower, re.IGNORECASE)
+                    if admin_match:
+                        # Get exact case from context
+                        admin_start = context_start + admin_match.start()
+                        admin_end = context_start + admin_match.end()
+                        extracted_admin = input_text[admin_start:admin_end]
+                        break
+                
+                # If no administration found, use from model or default
+                if not extracted_admin:
+                    extracted_admin = administrare_model if administrare_model else 'Conform indicațiilor medicale'
+                
+                medications_found.append({
+                    'nume': med_name_in_input,  # Use exact case from input
+                    'doza': extracted_dose,
+                    'administrare': extracted_admin
+                })
+            else:
+                # Medication not found in input, use formatted result but keep original format
+                medications_found.append({
+                    'nume': item.get('nume', item) if isinstance(item, dict) else item,
+                    'doza': doza_model,
+                    'administrare': administrare_model if administrare_model else 'Conform indicațiilor medicale'
+                })
+        else:
+            # Fallback to formatted result
+            medications_found.append({
+                'nume': item.get('nume', item) if isinstance(item, dict) else item,
+                'doza': doza_model,
+                'administrare': administrare_model if administrare_model else 'Conform indicațiilor medicale'
+            })
+    
+    return medications_found
+
+def generate_nota_clinica(formatted_result, input_text=None, patient_info=None):
+    """Generate Notă Clinică (Clinical Note) from formatted result"""
+    nota = "NOTĂ CLINICĂ\n"
+    nota += "=" * 80 + "\n\n"
+    
+    if patient_info:
+        if patient_info.get('varsta'):
+            nota += f"Vârsta: {patient_info['varsta']} ani\n"
+        if patient_info.get('sex'):
+            nota += f"Sex: {patient_info['sex']}\n"
+        nota += "\n"
+    
+    nota += "DIAGNOSTIC:\n"
+    if formatted_result.get('boala'):
+        boala = formatted_result['boala']
+        # Try to extract ICD-10 code if present
+        icd_match = None
+        if isinstance(boala, str):
+            import re
+            icd_match = re.search(r'\(ICD-10:\s*([^)]+)\)', boala)
+        if icd_match:
+            nota += f"{boala}\n"
+        else:
+            nota += f"{boala}\n"
+    else:
+        nota += "Nu a fost identificat\n"
+    nota += "\n"
+    
+    nota += "TRATAMENT RECOMANDAT:\n"
+    tratament = formatted_result.get('tratament_recomandat', [])
+    if tratament and len(tratament) > 0:
+        for item in tratament:
+            if isinstance(item, dict):
+                nume = item.get('nume', '')
+                doza = item.get('doza', '')
+                administrare = item.get('administrare', '')
+                nota += f"  • {nume}"
+                if doza:
+                    nota += f" {doza}"
+                if administrare:
+                    nota += f", {administrare}"
+                nota += "\n"
+            else:
+                nota += f"  • {item}\n"
+    else:
+        nota += "  Nu sunt recomandate medicamente\n"
+    nota += "\n"
+    
+    nota += "INVESTIGAȚII RECOMANDATE:\n"
+    investigatii = formatted_result.get('investigatii_suplimentare', [])
+    if investigatii and len(investigatii) > 0:
+        for item in investigatii:
+            nota += f"  • {item}\n"
+    else:
+        nota += "  Nu sunt recomandate investigații\n"
+    nota += "\n"
+    
+    nota += "RECOMANDĂRI:\n"
+    recomandari = formatted_result.get('recomandari_suplimentare', [])
+    if recomandari and len(recomandari) > 0:
+        for item in recomandari:
+            nota += f"  • {item}\n"
+    else:
+        nota += "  Nu sunt recomandări suplimentare\n"
+    
+    return nota
+
+def generate_reteta_mediala(formatted_result, input_text=None, patient_info=None):
+    """Generate Rețetă Medicală (Medical Prescription) from formatted result using exact words from input"""
+    reteta = "REȚETĂ MEDICALĂ\n"
+    reteta += "=" * 80 + "\n\n"
+    
+    reteta += f"Data: {datetime.now().strftime('%d.%m.%Y')}\n"
+    
+    if patient_info:
+        if patient_info.get('nume'):
+            reteta += f"Pacient: {patient_info['nume']}\n"
+        if patient_info.get('varsta'):
+            reteta += f"Vârstă: {patient_info['varsta']} ani\n"
+        else:
+            reteta += "Vârstă: None ani\n"
+    else:
+        reteta += "Pacient: [Nume pacient]\n"
+        reteta += "Vârstă: None ani\n"
+    reteta += "\n"
+    
+    reteta += "MEDICAMENTE:\n"
+    # Extract medications using exact words from input
+    medications = extract_medicamente_from_input(input_text, formatted_result) if input_text else []
+    
+    if medications and len(medications) > 0:
+        for idx, med in enumerate(medications, 1):
+            nume = med.get('nume', '')
+            doza = med.get('doza', '')
+            administrare = med.get('administrare', '')
+            
+            reteta += f"{idx}. {nume}"
+            if doza:
+                reteta += f" {doza}"
+            reteta += "\n"
+            if administrare:
+                reteta += f"   Administrare: {administrare}\n"
+    else:
+        # Fallback to formatted result if extraction failed
+        tratament = formatted_result.get('tratament_recomandat', [])
+        if tratament and len(tratament) > 0:
+            for idx, item in enumerate(tratament, 1):
+                if isinstance(item, dict):
+                    nume = item.get('nume', '')
+                    doza = item.get('doza', '')
+                    administrare = item.get('administrare', '')
+                    reteta += f"{idx}. {nume}"
+                    if doza:
+                        reteta += f" {doza}"
+                    reteta += "\n"
+                    if administrare:
+                        reteta += f"   Administrare: {administrare}\n"
+                else:
+                    reteta += f"{idx}. {item}\n"
+                    reteta += f"   Administrare: Conform indicațiilor medicale\n"
+        else:
+            reteta += "Nu sunt recomandate medicamente\n"
+    reteta += "\n"
+    
+    reteta += "Diagnostic: "
+    if formatted_result.get('boala'):
+        boala = formatted_result['boala']
+        # Extract ICD-10 if present
+        import re
+        icd_match = re.search(r'\(ICD-10:\s*([^)]+)\)', boala)
+        if icd_match:
+            reteta += f"{boala}\n"
+        else:
+            reteta += f"{boala}\n"
+    else:
+        reteta += "Nu a fost identificat\n"
+    
+    return reteta
+
+def save_nota_clinica_to_file(user_id, nota_content):
+    """Save Notă Clinică to a text file"""
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    filename = f"nota_clinica_{user_id}_{timestamp}.txt"
+    filepath = os.path.join(app.config['RESULTS_FOLDER'], filename)
+    
+    try:
+        with open(filepath, 'w', encoding='utf-8') as f:
+            f.write(nota_content)
+        return {'success': True, 'filename': filename, 'filepath': filepath}
+    except Exception as e:
+        return {'success': False, 'error': f'Eroare la salvarea fișierului: {str(e)}'}
+
+def save_reteta_mediala_to_file(user_id, reteta_content):
+    """Save Rețetă Medicală to a text file"""
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    filename = f"reteta_mediala_{user_id}_{timestamp}.txt"
+    filepath = os.path.join(app.config['RESULTS_FOLDER'], filename)
+    
+    try:
+        with open(filepath, 'w', encoding='utf-8') as f:
+            f.write(reteta_content)
+        return {'success': True, 'filename': filename, 'filepath': filepath}
+    except Exception as e:
+        return {'success': False, 'error': f'Eroare la salvarea fișierului: {str(e)}'}
+
 def save_result_to_file(user_id, input_text, result, result_type='text'):
-    """Save processing result to a text file on server"""
+    """Save processing result to a text file on server (deprecated - kept for compatibility)"""
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     filename = f"result_{user_id}_{timestamp}.txt"
     filepath = os.path.join(app.config['RESULTS_FOLDER'], filename)
@@ -419,11 +769,22 @@ def process_text_or_audio():
         # Format result to show only the 4 required fields
         formatted_result = format_result(result)
         
-        # Nu mai salvăm automat - doar când utilizatorul cere download
+        # Generate Notă Clinică and Rețetă Medicală
+        patient_info = {
+            'nume': session.get('full_name', ''),
+            'varsta': None,
+            'sex': None
+        }
+        nota_clinica = generate_nota_clinica(formatted_result, input_text, patient_info)
+        reteta_mediala = generate_reteta_mediala(formatted_result, input_text, patient_info)
+        
+        # Return both documents
         response_data = {
             'success': True,
             'input_text': input_text,
-            'result': formatted_result
+            'result': formatted_result,
+            'nota_clinica': nota_clinica,
+            'reteta_mediala': reteta_mediala
         }
         
         return jsonify(response_data)
@@ -459,6 +820,58 @@ def save_result():
     else:
         return jsonify({'error': save_result_data.get('error', 'Eroare la salvare')}), 500
 
+@app.route('/api/save-nota-clinica', methods=['POST'])
+def save_nota_clinica():
+    """Save Notă Clinică to file when user clicks download button"""
+    if 'user_id' not in session:
+        return jsonify({'error': 'Autentificare necesară'}), 401
+    
+    user_id = session['user_id']
+    data = request.json
+    
+    if not data or 'nota_clinica' not in data:
+        return jsonify({'error': 'Date incomplete'}), 400
+    
+    nota_content = data.get('nota_clinica', '')
+    
+    # Save nota clinica to file
+    save_result_data = save_nota_clinica_to_file(user_id, nota_content)
+    
+    if save_result_data.get('success'):
+        return jsonify({
+            'success': True,
+            'filename': save_result_data.get('filename'),
+            'message': 'Nota clinică a fost salvată cu succes'
+        })
+    else:
+        return jsonify({'error': save_result_data.get('error', 'Eroare la salvare')}), 500
+
+@app.route('/api/save-reteta-mediala', methods=['POST'])
+def save_reteta_mediala():
+    """Save Rețetă Medicală to file when user clicks download button"""
+    if 'user_id' not in session:
+        return jsonify({'error': 'Autentificare necesară'}), 401
+    
+    user_id = session['user_id']
+    data = request.json
+    
+    if not data or 'reteta_mediala' not in data:
+        return jsonify({'error': 'Date incomplete'}), 400
+    
+    reteta_content = data.get('reteta_mediala', '')
+    
+    # Save reteta medicala to file
+    save_result_data = save_reteta_mediala_to_file(user_id, reteta_content)
+    
+    if save_result_data.get('success'):
+        return jsonify({
+            'success': True,
+            'filename': save_result_data.get('filename'),
+            'message': 'Rețeta medicală a fost salvată cu succes'
+        })
+    else:
+        return jsonify({'error': save_result_data.get('error', 'Eroare la salvare')}), 500
+
 @app.route('/api/download-result/<filename>', methods=['GET'])
 def download_result(filename):
     """Download a result file"""
@@ -467,8 +880,14 @@ def download_result(filename):
     
     # Security: ensure filename is safe and belongs to user
     filepath = os.path.join(app.config['RESULTS_FOLDER'], secure_filename(filename))
+    user_id = session['user_id']
     
-    if os.path.exists(filepath) and filename.startswith(f"result_{session['user_id']}_"):
+    # Check if file exists and belongs to user (supports multiple file types)
+    if os.path.exists(filepath) and (
+        filename.startswith(f"result_{user_id}_") or
+        filename.startswith(f"nota_clinica_{user_id}_") or
+        filename.startswith(f"reteta_mediala_{user_id}_")
+    ):
         return send_file(filepath, as_attachment=True, download_name=filename)
     else:
         return jsonify({'error': 'Fișier negăsit sau acces neautorizat'}), 404

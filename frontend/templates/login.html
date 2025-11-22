@@ -83,7 +83,7 @@
             border: 1px solid #fcc;
         }
         
-        .btn-login, .btn-register, .btn-demo {
+        .btn-login {
             width: 100%;
             padding: 14px;
             border: none;
@@ -93,9 +93,6 @@
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
             margin-bottom: 10px;
-        }
-        
-        .btn-login {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
@@ -103,25 +100,6 @@
         .btn-login:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-        
-        .btn-register {
-            background: #f0f0f0;
-            color: #333;
-        }
-        
-        .btn-register:hover {
-            background: #e0e0e0;
-        }
-        
-        .btn-demo {
-            background: #4CAF50;
-            color: white;
-        }
-        
-        .btn-demo:hover {
-            background: #45a049;
-            transform: translateY(-2px);
         }
         
         .login-footer {
@@ -169,13 +147,14 @@
                 <div id="errorMessage" class="error-message" style="display: none;"></div>
                 
                 <button type="submit" class="btn-login">Autentificare</button>
-                <button type="button" class="btn-demo" onclick="demoLogin()">Cont Demo</button>
             </form>
             
             <div class="login-footer">
-                <p>Nu aveți cont? <a href="{{ url_for('register') }}">Creați unul aici</a></p>
                 <p style="font-size: 0.9em; color: #999; margin-top: 15px;">
-                    Cont demo: <strong>demo</strong> / <strong>demo123</strong>
+                    <strong>Conturi disponibile:</strong><br>
+                    <strong>admin</strong> / <strong>admin123</strong> (Administrator)<br>
+                    <strong>pacient1</strong> / <strong>pacient123</strong><br>
+                    <strong>pacient2</strong> / <strong>pacient456</strong>
                 </p>
             </div>
         </div>
@@ -214,31 +193,6 @@
             }
         });
         
-        async function demoLogin() {
-            const errorDiv = document.getElementById('errorMessage');
-            errorDiv.style.display = 'none';
-            
-            try {
-                const response = await fetch('/demo-login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                const data = await response.json();
-                
-                if (response.ok && data.success) {
-                    window.location.href = '/';
-                } else {
-                    errorDiv.textContent = data.error || 'Eroare la autentificare demo';
-                    errorDiv.style.display = 'block';
-                }
-            } catch (error) {
-                errorDiv.textContent = 'Eroare de conexiune. Vă rugăm să încercați din nou.';
-                errorDiv.style.display = 'block';
-            }
-        }
     </script>
 </body>
 </html>

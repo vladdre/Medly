@@ -237,6 +237,54 @@
             line-height: 1.6;
         }
         
+        .result-field {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .result-field-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .result-field-content {
+            color: #333;
+            line-height: 1.8;
+        }
+        
+        .result-field-content ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .result-field-content li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        .result-field-content li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        
+        .result-field-content p {
+            margin: 0;
+            padding: 8px 0;
+        }
+        
         .download-btn {
             background: #4CAF50;
             color: white;
@@ -709,16 +757,19 @@
                 const data = await response.json();
                 
                 if (response.ok && data.success) {
-                    // Display results
-                    const resultsContent = document.getElementById('resultsContent');
-                    resultsContent.innerHTML = '<pre>' + JSON.stringify(data.result, null, 2) + '</pre>';
+                    // Store result data for download
+                    window.lastProcessedResult = {
+                        input_text: data.input_text,
+                        result: data.result
+                    };
                     
-                    if (data.file_saved && data.filename) {
-                        currentResultFilename = data.filename;
-                        document.getElementById('downloadBtn').style.display = 'block';
-                        successDiv.textContent = `Rezultatul a fost salvat în fișier: ${data.filename}`;
-                        successDiv.style.display = 'block';
-                    }
+                    // Display results in formatted way
+                    const resultsContent = document.getElementById('resultsContent');
+                    resultsContent.innerHTML = formatResultDisplay(data.result);
+                    
+                    // Show download button (file not saved yet)
+                    currentResultFilename = null;
+                    document.getElementById('downloadBtn').style.display = 'block';
                     
                     resultsSection.style.display = 'block';
                 } else {
@@ -734,10 +785,114 @@
             }
         }
 
-        function downloadResult() {
-            if (currentResultFilename) {
-                window.location.href = `/api/download-result/${currentResultFilename}`;
+        async function downloadResult() {
+            if (!window.lastProcessedResult) {
+                alert('Nu există rezultat de descărcat. Procesați mai întâi un text.');
+                return;
             }
+            
+            const downloadBtn = document.getElementById('downloadBtn');
+            const successDiv = document.getElementById('successMessage');
+            const errorDiv = document.getElementById('errorMessage');
+            
+            downloadBtn.disabled = true;
+            downloadBtn.textContent = 'Se salvează...';
+            
+            try {
+                // Save result to file first
+                const saveResponse = await fetch('/api/save-result', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        input_text: window.lastProcessedResult.input_text,
+                        result: window.lastProcessedResult.result,
+                        result_type: 'text'
+                    })
+                });
+                
+                const saveData = await saveResponse.json();
+                
+                if (saveResponse.ok && saveData.success) {
+                    currentResultFilename = saveData.filename;
+                    // Download the file
+                    window.location.href = `/api/download-result/${saveData.filename}`;
+                    
+                    successDiv.textContent = 'Rezultatul a fost salvat și descărcat cu succes!';
+                    successDiv.style.display = 'block';
+                    errorDiv.style.display = 'none';
+                } else {
+                    errorDiv.textContent = saveData.error || 'Eroare la salvarea rezultatului';
+                    errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Eroare de conexiune la salvarea rezultatului';
+                errorDiv.style.display = 'block';
+            } finally {
+                downloadBtn.disabled = false;
+                downloadBtn.textContent = 'Descarcă Rezultatul';
+            }
+        }
+
+        function formatResultDisplay(result) {
+            if (!result) return '<p>Nu s-au găsit rezultate.</p>';
+            
+            let html = '';
+            
+            // Boala
+            html += '<div class="result-field">';
+            html += '<div class="result-field-title">🏥 Boală</div>';
+            html += '<div class="result-field-content">';
+            html += `<p>${result.boala || 'Nu a fost identificată'}</p>`;
+            html += '</div></div>';
+            
+            // Tratament Recomandat
+            html += '<div class="result-field">';
+            html += '<div class="result-field-title">💊 Tratament Recomandat</div>';
+            html += '<div class="result-field-content">';
+            if (result.tratament_recomandat && result.tratament_recomandat.length > 0) {
+                html += '<ul>';
+                result.tratament_recomandat.forEach(item => {
+                    html += `<li>${item}</li>`;
+                });
+                html += '</ul>';
+            } else {
+                html += '<p>Nu sunt recomandate medicamente</p>';
+            }
+            html += '</div></div>';
+            
+            // Investigatii Suplimentare
+            html += '<div class="result-field">';
+            html += '<div class="result-field-title">🔬 Investigații Suplimentare</div>';
+            html += '<div class="result-field-content">';
+            if (result.investigatii_suplimentare && result.investigatii_suplimentare.length > 0) {
+                html += '<ul>';
+                result.investigatii_suplimentare.forEach(item => {
+                    html += `<li>${item}</li>`;
+                });
+                html += '</ul>';
+            } else {
+                html += '<p>Nu sunt recomandate investigații</p>';
+            }
+            html += '</div></div>';
+            
+            // Recomandari Suplimentare
+            html += '<div class="result-field">';
+            html += '<div class="result-field-title">📋 Recomandări Suplimentare</div>';
+            html += '<div class="result-field-content">';
+            if (result.recomandari_suplimentare && result.recomandari_suplimentare.length > 0) {
+                html += '<ul>';
+                result.recomandari_suplimentare.forEach(item => {
+                    html += `<li>${item}</li>`;
+                });
+                html += '</ul>';
+            } else {
+                html += '<p>Nu sunt recomandări suplimentare</p>';
+            }
+            html += '</div></div>';
+            
+            return html;
         }
 
         async function logout() {

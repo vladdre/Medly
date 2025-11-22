@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Data files
+data/uploads/*
+data/results/*
+data/models/*
+!data/uploads/.gitkeep
+!data/results/.gitkeep
+
+# Model files (dacă sunt mari, poate vrei să le excluzi)
+# data/models/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+

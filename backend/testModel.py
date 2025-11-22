@@ -3,7 +3,10 @@ import json
 import torch
 from transformers import T5Tokenizer, T5ForConditionalGeneration
 
-MODEL_DIR = "./finetuned_t5_model"
+import os
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PARENT_DIR = os.path.dirname(BASE_DIR)
+MODEL_DIR = os.path.join(PARENT_DIR, "data", "models", "finetuned_t5_model")
 MAX_INPUT_LEN = 256
 MAX_OUTPUT_LEN = 300
 
@@ -72,14 +75,16 @@ def _try_fix_and_parse_json(s):
 def generate_structured(tokenizer, model, device, inputs, max_out_len=MAX_OUTPUT_LEN):
     results = []
     for inp in inputs:
-        # Modificarea promptului pentru a cere modelului doar JSON valid
+        # Modificarea promptului pentru a cere modelului doar JSON valid cu cele 4 câmpuri cerute
         prompt = (inp + "\n\nRăspunsul trebuie să fie strict JSON valid cu următoarele chei:\n"
-                "boala (string), "
-                "medicamente_recomandate (list of objects with keys: nume, doza, administrare),\n"
-                "investigatii_recomandate (list of strings), recomandari_suplimentare (list of strings).\n"
+                "boala (string) - numele bolii identificate,\n"
+                "medicamente_recomandate (list of objects with keys: nume, doza, administrare) - tratamentul recomandat,\n"
+                "investigatii_recomandate (list of strings) - investigații suplimentare necesare,\n"
+                "recomandari_suplimentare (list of strings) - recomandări suplimentare pentru pacient.\n"
                 "Exemplu: {\"boala\": \"astm bronșic\", "
                 "\"medicamente_recomandate\": [{\"nume\": \"Salbutamol\", \"doza\": \"100 mcg\", \"administrare\": \"inhalator\"}], "
-                "\"investigatii_recomandate\": [\"spirometrie\", \"radiografie toracică\"], \"recomandari_suplimentare\": [\"evitați expunerea la praf\"]}\n"
+                "\"investigatii_recomandate\": [\"spirometrie\", \"radiografie toracică\"], "
+                "\"recomandari_suplimentare\": [\"evitați expunerea la praf\", \"monitorizare simptome\"]}\n"
                 "Returnează doar JSON valid, fără explicații.")
 
         enc = tokenizer(prompt, return_tensors="pt", truncation=True, padding=True, max_length=MAX_INPUT_LEN)

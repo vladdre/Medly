@@ -51,8 +51,10 @@ Proiectul a fost dezvoltat pentru a simplifica și accelera procesul de document
    - Investigațiile necesare
    - Recomandările pentru pacient
 3. **Generare documente**: Sistemul generează automat două documente medicale:
-   - **Notă Clinică**: Document complet cu diagnostic, tratament, investigații și recomandări
+   - **Notă Clinică**: Document complet cu diagnostic, tratament, investigații și recomandări (inclusiv vârstă și sex dacă sunt disponibile)
    - **Rețetă Medicală**: Rețetă standardizată cu medicamente, doze și administrare
+     - Numele pacientului este extras automat din textul de intrare (ex: "Domnul Popescu")
+     - Vârsta nu este afișată în rețetă (doar în Notă Clinică)
 
 Sistemul permite editarea manuală a documentelor generate și salvarea lor ca fișiere separate, oferind flexibilitate completă medicilor.
 
@@ -69,10 +71,13 @@ Sistemul permite editarea manuală a documentelor generate și salvarea lor ca f
 - **Model T5 fine-tuned**: Model de machine learning specializat pentru text medical românesc
 - **Extragere automată**: Identificare automată a diagnosticului, tratamentului, investigațiilor și recomandărilor
 - **Folosire strictă a input-ului**: Medicamentele și dozele sunt extrase exact din textul introdus
+- **Extragere nume pacient**: Numele pacientului este extras automat din text (ex: "Domnul Popescu", "Doamna Ionescu") și afișat în rețeta medicală
 
 ### 📄 Generare Documente
-- **Notă Clinică**: Document complet cu toate informațiile medicale relevante
+- **Notă Clinică**: Document complet cu toate informațiile medicale relevante (inclusiv vârstă și sex dacă sunt disponibile)
 - **Rețetă Medicală**: Rețetă standardizată cu medicamente, doze și administrare
+  - Numele pacientului este extras automat din textul de intrare (ex: "Domnul Popescu", "Doamna Ionescu")
+  - Vârsta nu este afișată în rețetă (doar în Notă Clinică)
 - **Formatare profesională**: Documente formatate conform standardelor medicale
 
 ### ✏️ Editare și Salvare
@@ -333,8 +338,10 @@ După autentificare, ai două opțiuni:
 
 După procesare, vei vedea două secțiuni:
 
-- **📄 Notă Clinică**: Document complet cu diagnostic, tratament, investigații și recomandări
+- **📄 Notă Clinică**: Document complet cu diagnostic, tratament, investigații și recomandări (inclusiv vârstă și sex dacă sunt disponibile)
 - **💊 Rețetă Medicală**: Rețetă cu medicamente, doze și administrare
+  - Numele pacientului este extras automat din textul introdus (ex: dacă scrii "Domnul Popescu", acesta va apărea în rețetă)
+  - Vârsta nu este afișată în rețetă (doar în Notă Clinică)
 
 ### 4. Editare Documente
 

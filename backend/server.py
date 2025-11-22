@@ -464,13 +464,8 @@ def generate_reteta_mediala(formatted_result, input_text=None, patient_info=None
     if patient_info:
         if patient_info.get('nume'):
             reteta += f"Pacient: {patient_info['nume']}\n"
-        if patient_info.get('varsta'):
-            reteta += f"Vârstă: {patient_info['varsta']} ani\n"
-        else:
-            reteta += "Vârstă: None ani\n"
     else:
         reteta += "Pacient: [Nume pacient]\n"
-        reteta += "Vârstă: None ani\n"
     reteta += "\n"
     
     reteta += "MEDICAMENTE:\n"
@@ -894,4 +889,3 @@ def download_result(filename):
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
-

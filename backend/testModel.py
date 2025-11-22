@@ -10,8 +10,6 @@ MODEL_DIR = os.path.join(PARENT_DIR, "data", "models", "finetuned_t5_model")
 MAX_INPUT_LEN = 256
 MAX_OUTPUT_LEN = 300
 
-# ...existing code...
-
 def run_with_input(input_text, structured=False, model_dir=MODEL_DIR, max_out_len=MAX_OUTPUT_LEN):
     """
     Rulează procesul de generare pentru un text (sau listă de texte) și returnează rezultatul.
@@ -34,8 +32,6 @@ def run_with_input(input_text, structured=False, model_dir=MODEL_DIR, max_out_le
         preds = generate_texts(tokenizer, model, device, inputs, max_out_len)
         outs = [{"generated_text": p} for p in preds]
         return outs if len(outs) > 1 else outs[0]
-
-# ...existing code...
 
 def load_model(model_dir=MODEL_DIR):
     tokenizer = T5Tokenizer.from_pretrained(model_dir)
@@ -190,4 +186,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

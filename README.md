@@ -130,13 +130,19 @@ MedlyFinal/
 │   │   ├── index.html           # Pagină principală cu procesare text/audio
 │   │   ├── login.html           # Pagină autentificare
 │   │   └── register.html        # Pagină înregistrare
-│   └── 📁 static/               # Fișiere statice (CSS, JS, imagini)
+│   └── 📁 static/               # Fișiere statice (CSS, JS, imagini) - opțional
 │
 ├── 📁 data/                      # Date și fișiere generate
-│   ├── 📁 models/               # Model ML antrenat
-│   │   └── finetuned_t5_model/  # Model T5 pentru procesare
+│   ├── 📁 models/               # Model ML antrenat și fișiere de antrenare
+│   │   ├── finetuned_t5_model/  # Model T5 pentru procesare
+│   │   │   ├── config.json, model.safetensors, tokenizer files
+│   │   │   └── checkpoint-*/    # Checkpoint-uri de antrenare (opțional)
+│   │   ├── data.json            # Date de antrenare pentru model
+│   │   └── training.py          # Script pentru antrenare model
 │   ├── 📁 uploads/              # Fișiere audio temporare (șterse după procesare)
-│   ├── 📁 results/              # Rezultate procesare salvate
+│   │   └── .gitkeep             # Fișier pentru a menține directorul în git
+│   ├── 📁 results/              # Rezultate procesare salvate (Note Clinice și Rețete)
+│   │   └── .gitkeep             # Fișier pentru a menține directorul în git
 │   └── medical_records.db       # Baza de date SQLite cu utilizatori
 │
 ├── 📁 config/                    # Configurație și documentație
@@ -144,6 +150,7 @@ MedlyFinal/
 │   └── README.md                # Documentație suplimentară
 │
 ├── run.py                        # Script de pornire server
+├── .gitignore                    # Fișiere ignorate de git
 ├── STRUCTURE.md                  # Documentație structură proiect
 └── README.md                     # Acest fișier
 ```
@@ -172,9 +179,15 @@ Conține interfața utilizatorului:
 
 #### `data/`
 Conține toate datele:
-- **models/**: Model ML antrenat (T5 fine-tuned)
+- **models/**: 
+  - `finetuned_t5_model/`: Model ML antrenat (T5 fine-tuned) cu fișiere de configurare, weights și tokenizer
+    - Poate conține checkpoint-uri de antrenare (checkpoint-500, checkpoint-759, etc.)
+  - `data.json`: Date de antrenare pentru model
+  - `training.py`: Script pentru antrenare model
 - **uploads/**: Fișiere audio temporare (șterse automat după procesare)
+  - `.gitkeep`: Fișier pentru a menține directorul în git
 - **results/**: Rezultate procesare salvate (Notă Clinică și Rețetă Medicală)
+  - `.gitkeep`: Fișier pentru a menține directorul în git
 - **medical_records.db**: Baza de date SQLite cu utilizatori
 
 ---
